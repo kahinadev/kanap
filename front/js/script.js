@@ -44,17 +44,6 @@ fetch("http://localhost:3000/api/products", requestOptions)
             console.log(kanap)
         }
 
-        // Récuperer l'URL DU PRODUIT 
-
-        const urlOne = "http://localhost:3000/images/kanap01.jpeg";
-        const one = new URL(urlOne);
-        const search_params = new URLSearchParams(one.search);
-
-        if(search_params.has('id')) {
-            let id = search_params.get('id');
-            console.log(id)
-        }
-
     }) 
     .catch((error) => console.log('error', error));
 
