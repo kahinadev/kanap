@@ -4,10 +4,7 @@ const urlOne = window.location.href;
 const one = new URL(urlOne);
 const search_params = new URLSearchParams(one.search);
 
-if(search_params.has('id')) {
-    let id = search_params.get('id');
-    console.log(id)
-}
+let id = search_params.get('id');
 
 // Recuperer les infos du produit
 
@@ -16,64 +13,70 @@ var requestOptions = {
     redirect: 'follow'
 }
 
-fetch("http://localhost:3000/api/products/{product-ID}", requestOptions) 
+fetch("http://localhost:3000/api/products/" + id, requestOptions) 
 
     .then((response) => response.json())
     .then((result) => {
 
-        for(const kanap of result) {
+        const h1 = document.getElementById('title');
+
+        h1.innerText = result.name;
+
+        const span = document.getElementById("price");
+
+        span.innerText = result.price;
+
+        const description = document.getElementById("description");
+        description.innerText = result.description;
+
+        const imgProduct = document.getElementById("img-product");
+        imgProduct.setAttribute('src', result.imageUrl);
+        imgProduct.setAttribute('alt', result.altTxt);
+
+        const select = document.getElementById('colors');
+
+        for(const color of result.colors) {
+
+            const option = document.createElement('option');
+            option.innerText = color;
+
+            option.setAttribute('value', color);
+
+            select.appendChild(option);
             
-            const item = document.createElement('item');
-            const article = document.createElement('article');
-
-            item.appendChild(article);
-
-            const itemContent = document.createElement('div');
-            const itemTitle = document.createElement('div');
-            const itemDescription = document.createElement('div');
-            const itemSettings = document.createElement('div');
-
-            itemContent.appendChild(itemTitle);
-            itemContent.appendChild(itemDescription);
-            itemContent.appendChild(itemSettings);
-
-            // Première partie du contenu 
-
-            const h1 = document.createElement('h1');
-            itemTitle.appendChild(h1);
-
-            const p = document.createElement('p');
-            const span = document.createElement('span');
-
-            p.appendChild(span);
-
-            // Deuxieme partie du contenu 
-
-            const productDescriptionTitle = document.createElement('p');
-            const productDescription = document.createElement('p')
-
-            itemDescription.appendChild(productDescriptionTitle);
-            itemDescription.appendChild(productDescription);
-
-            // Ajout du contenu 
-
-            h1.innerText = kanap.name;
-            h1.setAttribute('id', 'title');
-
-            p.innerText = 'Prix :';
-
-            span.innerText = kanap.price;
-            span.setAttribute('id', 'price');
-
-            productDescriptionTitle.innerText = 'Description :';
-            productDescription.innerText = kanap.description;
-
-            productDescriptionTitle.setAttribute('class', 'item__content__description__title');
-            productDescription.setAttribute('id', 'description');
-
-            console.log(kanap)
-
         }
+
+        // Ajout du produit au panier
+
+        const button = document.getElementById('addToCart');
+
+        button.addEventListener('click', () => {
+
+            const setProduct = {
+                id: result.productId,
+                quantity: document.getElementById('quantity').value,
+                colors: document.getElementById('colors').value
+            }
+
+            // Initialisation au localStorage
+
+            const storageProduct = JSON.parse(localStorage.getItem('product'));
+
+            if(storageProduct) {
+
+                storageProduct.push(setProduct);
+                localStorage.setItem('product', JSON.stringify(storageProduct));
+                
+            } else {
+
+                storageProduct = [];
+                storageProduct.push(setProduct);
+                console.log(storageProduct);
+                localStorage.setItem('product', JSON.stringify(storageProduct));
+
+            }
+
+        })
 
     })
     .catch((error) => console.error('error', error))
