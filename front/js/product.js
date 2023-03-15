@@ -53,28 +53,60 @@ fetch("http://localhost:3000/api/products/" + id, requestOptions)
         button.addEventListener('click', () => {
 
             const setProduct = {
-                id: result.productId,
-                quantity: document.getElementById('quantity').value,
+                id: result._id,
+                quantity: parseInt(document.getElementById('quantity').value),
                 colors: document.getElementById('colors').value
+            }
+
+            console.log(setProduct, result, document.getElementById('colors'));
+
+            if(!setProduct.colors) {
+
+                alert('Il faut préciser une couleur');
+
+                return; 
+
+            }
+
+            if(!setProduct.quantity) {
+
+                alert('Il faut mettre une quantité');
+
+                return;
+
             }
 
             // Initialisation au localStorage
 
-            const storageProduct = JSON.parse(localStorage.getItem('product'));
+            let storageProduct = JSON.parse(localStorage.getItem('product'));
 
-            if(storageProduct) {
-
-                storageProduct.push(setProduct);
-                localStorage.setItem('product', JSON.stringify(storageProduct));
+            if (!storageProduct) {
                 
-            } else {
-
                 storageProduct = [];
-                storageProduct.push(setProduct);
-                console.log(storageProduct);
-                localStorage.setItem('product', JSON.stringify(storageProduct));
 
             }
+               
+            const index = storageProduct.findIndex(
+
+                (value) => {
+
+                    return value.id === setProduct.id && value.colors === setProduct.colors;
+
+                }
+
+            );
+
+            if(index === -1) {
+
+                storageProduct.push(setProduct);
+
+            } else {
+
+                storageProduct[index].quantity = storageProduct[index].quantity + setProduct.quantity;
+
+            }
+
+            localStorage.setItem('product', JSON.stringify(storageProduct));
 
         })
 
